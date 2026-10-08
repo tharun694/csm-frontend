@@ -20,7 +20,7 @@ const[issue,setIssue]=useState('');
   }
   console.log(user)
 const response=  await  fetch(
-  'https://localhost:8080/user',{
+  'https://csm-6.onrender.com/user',{
 'method':'POST',
 'headers':{
   'Content-Type':'application/json'
