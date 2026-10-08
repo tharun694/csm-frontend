@@ -1,14 +1,13 @@
 import React,{useState} from 'react';
-import { useNavigate } from 'react-router-dom';
 function Form(){
-const[user,setUser]=useState<[]>();
-  const [id,setId]=useState();
+
+  
   const[name,setName]=useState('');
   const[email,setEmail]=useState('');
 const[issue,setIssue]=useState('');
-  const navigate=useNavigate();
+ 
   
- function adduser(event:React.FormEvent<HTMLFormElement>){
+  async function adduser(event:React.FormEvent<HTMLFormElement>){
 
   event.preventDefault();
   if(name===''||email===''||issue===''){
@@ -20,8 +19,8 @@ const[issue,setIssue]=useState('');
     issue
   }
   console.log(user)
-const response=   fetch(
-  'http://localhost:8080/user',{
+const response=  await  fetch(
+  'https://csm-4.onrender.com/user',{
 'method':'POST',
 'headers':{
   'Content-Type':'application/json'
@@ -30,7 +29,12 @@ const response=   fetch(
   }
 )
 
-alert("issue sended sucesfully wait for few seconds...!,check your email for response and check in spams too")
+if(response.ok){
+alert(" Thank you for your issue, It sended sucesfully wait for few seconds...! , check your email for response")
+}else{
+  alert(" issues sended failed")
+}
+
 
 }
   return (
