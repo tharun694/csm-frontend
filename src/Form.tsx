@@ -1,42 +1,64 @@
 import React,{useState} from 'react';
+import PopupMessage from './PopupMessage';
+
+type PopupState = {
+  message: string;
+  type: 'success' | 'error';
+};
+
 function Form(){
 
   
   const[name,setName]=useState('');
   const[email,setEmail]=useState('');
 const[issue,setIssue]=useState('');
- 
+ const[popup,setPopup]=useState<PopupState | null>(null);
+ const[isSubmitting,setIsSubmitting]=useState(false);
   
   async function adduser(event:React.FormEvent<HTMLFormElement>){
 
   event.preventDefault();
   if(name===''||email===''||issue===''){
-    alert("fill the details first");
+    setPopup({
+      message: 'Please fill in your name, email, and issue description.',
+      type: 'error'
+    });
+    return;
   }
   const user={
     name,
     email,
     issue
   }
-  console.log(user)
-const response=  await  fetch(
-  'https://csm-6.onrender.com/user',{
-'method':'POST',
-'headers':{
-  'Content-Type':'application/json'
-},
-'body':JSON.stringify(user)
+  setPopup({
+    message: 'Your issue report is being sent. Please check your email for updates; the server may take a little while to process it.',
+    type: 'success'
+  });
+  setIsSubmitting(true);
+  try {
+    const response = await fetch('https://csm-6.onrender.com/user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(user)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Unable to submit the issue report:', error);
+    setPopup({
+      message: 'We could not submit your issue right now. Please try again in a moment.',
+      type: 'error'
+    });
+  } finally {
+    setIsSubmitting(false);
   }
-)
-
-if(response.ok){
-alert(" Thank you for your issue, It sended sucesfully wait for few seconds...! , check your email for response")
-}else{
-  alert(" issues sended failed")
-}
-
 
 }
+
   return (
   
 <div
@@ -188,10 +210,19 @@ alert(" Thank you for your issue, It sended sucesfully wait for few seconds...! 
         cursor: "pointer",
         marginTop: "5px"
       }}
-    >
-      Submit Issue
+   disabled={isSubmitting}
+   >
+   {isSubmitting ? 'Submitting...' : 'Submit Issue'}
     </button>
   </form>
+  {popup && (
+    <PopupMessage
+   message={popup.message}
+   type={popup.type}
+   onClose={() => setPopup(null)}
+    />
+  )}
+
 </div>
   )
 }
